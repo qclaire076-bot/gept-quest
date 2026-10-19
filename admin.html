@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>闖關島家長後台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F1EA;--card:#FFFFFF;--ink:#1B1B2F;--muted:#6B6580;--line:#E3DED3;--accent:#2E6FD8;--good:#2FA866;--bad:#D63A3D;--coin:#E8A317;--soft:#FFF6DC;
+  --tc:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15151F;--card:#1F1F2C;--ink:#F1EDE4;--muted:#A9A3BC;--line:#33334A;--soft:#2A2740;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15151F;--card:#1F1F2C;--ink:#F1EDE4;--muted:#A9A3BC;--line:#33334A;--soft:#2A2740;color-scheme:dark}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--tc);line-height:1.6}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ink);color:#FFF6DC;padding:12px 16px;display:flex;align-items:center;gap:12px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:6;background:var(--ink)}
+
+header h1{font-size:17px;margin:0;flex:1;font-weight:900}
+header .who{font-size:12px;opacity:.8}
+main{max-width:960px;margin:0 auto;padding:16px 14px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{font-size:17px;margin:0 0 10px;font-weight:900}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat .n{font-size:24px;font-weight:900;line-height:1.2}
+.stat .l{font-size:13px;color:var(--muted)}
+.stat.hl{background:var(--soft);border-color:var(--coin)}
+.muted{color:var(--muted);font-size:13px}
+.status{font-weight:700;margin:0}
+.bars{display:flex;align-items:flex-end;gap:6px;height:130px;padding-top:6px;overflow-x:auto}
+.bar{flex:1;min-width:24px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:var(--muted)}
+.bar i{display:block;width:100%;background:var(--accent);border-radius:5px 5px 0 0;min-height:2px}
+.bar i.met{background:var(--good)}
+.bar b{font-weight:700;color:var(--ink);font-size:11px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14px}
+th,td{padding:8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:700;font-size:13px}
+td.wrap{white-space:normal;min-width:110px}
+tr.old{opacity:.5}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px}
+.prog{display:flex;align-items:center;gap:10px;margin:6px 0}
+.prog span:first-child{width:76px;font-weight:700;font-size:14px}
+.prog .track{flex:1;height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.prog .track i{display:block;height:100%;background:var(--good)}
+.prog span:last-child{width:70px;text-align:right;font-size:13px;color:var(--muted)}
+.mis{border-bottom:1px solid var(--line);padding:8px 0}
+.mis:last-child{border:0}
+.tag{display:inline-block;background:var(--ink);color:var(--coin);font-size:12px;font-weight:700;padding:1px 8px;border-radius:4px;margin-right:6px}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+input,select{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row>div{flex:1;min-width:120px}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 16px;font-weight:700}
+.primary{background:var(--accent);color:#fff}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.danger{color:var(--bad)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--coin);outline-offset:2px}
+.pay{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:8px 0}
+.pay:last-child{border:0}
+.pay div{flex:1}
+.login{max-width:380px;margin:40px auto}
+.msg{color:var(--bad);font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;z-index:20}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header><h1>🦊 闖關島家長後台</h1><span class="who" id="who"></span><button class="ghost hidden" id="logout" style="color:#FFF6DC;border-color:#555;padding:6px 12px">登出</button></header>
+<main>
+  <section id="loginBox" class="card login hidden">
+    <h2>家長登入</h2>
+    <p class="muted">請用 Firebase 建立的「家長帳號」登入。</p>
+    <p class="msg" id="loginMsg"></p>
+    <label for="em">Email</label><input type="email" id="em" autocomplete="username">
+    <label for="pw">密碼</label><input type="password" id="pw" autocomplete="current-password">
+    <div class="row" style="margin-top:14px"><button class="primary" id="loginBtn">登入</button></div>
+  </section>
+  <p id="loading" class="muted">載入中…</p>
+  <div id="app" class="hidden">
+    <div id="dash"></div>
+    <section class="card">
+      <h2>結算零用金</h2>
+      <p class="muted" id="setInfo"></p>
+      <div class="row">
+        <div><label for="paid">實際發放金額（NT$）</label><input type="text" inputmode="decimal" id="paid"></div>
+        <div><label for="note">備註（可不填）</label><input type="text" id="note" placeholder="例如：10 月零用金"></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="primary" id="settleBtn">確認發放並歸零</button></div>
+      <p class="muted">按下後會留下領取紀錄，本期金額歸零，從今天重新開始計算。建議在孩子沒有在練習的時候結算。</p>
+      <h2 style="margin-top:18px">領取紀錄</h2>
+      <div id="payList"></div>
+    </section>
+    <section class="card">
+      <h2>規則設定</h2>
+      <div class="row">
+        <div><label for="dayCap">每天練習上限（NT$）</label><input type="text" inputmode="decimal" id="dayCap"></div>
+        <div><label for="monCap">每期上限（NT$）</label><input type="text" inputmode="decimal" id="monCap"></div>
+        <div><label for="goal">每日目標（關）</label><select id="goal"></select></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="primary" id="ruleBtn">儲存設定</button></div>
+    </section>
+  </div>
+</main>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {getFirestore,doc,getDoc,setDoc,onSnapshot} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+const app=initializeApp({apiKey:"AIzaSyByl7YoDvlcxMV3hlRi2D8diKmouKr9IiY",authDomain:"gept-quest.firebaseapp.com",projectId:"gept-quest",storageBucket:"gept-quest.firebasestorage.app",messagingSenderId:"12095583062",appId:"1:12095583062:web:7b3ece1a6fdc27bb831cf7"});
+const auth=getAuth(app);const ref=doc(getFirestore(app),'families','main');
+const PARENT='0cNZFyU1h6ehYXDrpzWK4y5dd9w2';
+const WORDS={e:2133,i:2527};
+const TYPE_NAME={7:'字表',1:'單字',2:'文法',3:'克漏字',4:'閱讀',5:'聽力',6:'翻譯'};
+const WORLDS=[[1,'單字草原',3],[2,'文法洞窟',12],[3,'克漏字雲海',3],[4,'閱讀叢林',3],[5,'聽力山谷',3],[6,'翻譯高塔',3]];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const r2=n=>Math.round((n||0)*100)/100, money=n=>r2(n).toFixed(2);
+const today=()=>new Date().toLocaleDateString('sv-SE');
+const uid=()=>Math.random().toString(36).slice(2,10);
+function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2400)}
+function ensure(s){s.days=s.days||{};s.items=s.items||[];s.mistakes=s.mistakes||[];s.payouts=s.payouts||[];s.best=s.best||{};s.wl=s.wl||{};s.del=s.del||[];
+  s.period=s.period||{start:today(),earned:0};s.rules=s.rules||{day:4,month:100};s.goal=s.goal||3;return s}
+let S=null,unsub=null,formReady=false;
+
+$('goal').innerHTML=[1,2,3,4,5].map(n=>`<option value="${n}">${n} 關</option>`).join('');
+onAuthStateChanged(auth,u=>{
+  $('loading').classList.add('hidden');
+  if(!u){$('loginBox').classList.remove('hidden');$('app').classList.add('hidden');$('logout').classList.add('hidden');$('who').textContent='';if(unsub){unsub();unsub=null}return}
+  if(u.uid!==PARENT){$('loginMsg').textContent='這個帳號不是家長帳號，請改用家長帳號登入。';signOut(auth);return}
+  $('loginBox').classList.add('hidden');$('app').classList.remove('hidden');$('logout').classList.remove('hidden');$('who').textContent=u.email||'';
+  unsub=onSnapshot(ref,snap=>{S=snap.exists()?ensure(JSON.parse(JSON.stringify(snap.data()))):null;render()},err=>{$('dash').innerHTML=`<div class="card msg">讀取資料失敗：${esc(err.code||err.message)}。請確認 Firestore 的權限設定已經貼上。</div>`});
+});
+$('loginBtn').onclick=async()=>{const em=$('em').value.trim(),pw=$('pw').value;if(!em||!pw){$('loginMsg').textContent='請輸入 Email 和密碼';return}
+  $('loginBtn').disabled=true;$('loginMsg').textContent='';
+  try{await signInWithEmailAndPassword(auth,em,pw)}catch(e){const c=e.code||'';$('loginMsg').textContent=c.includes('network')?'網路連不上。':c.includes('too-many')?'嘗試太多次，請等幾分鐘再試。':'Email 或密碼不對。'}
+  $('loginBtn').disabled=false};
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('loginBtn').click()});
+$('logout').onclick=()=>signOut(auth);
+
+function streak(s){let n=0;const d=new Date();if(!((s.days[today()]||{}).stages>=s.goal))d.setDate(d.getDate()-1);
+  while(true){const k=d.toLocaleDateString('sv-SE');if((s.days[k]||{}).stages>=s.goal){n++;d.setDate(d.getDate()-1)}else break}return n}
+function typeMsg(d){const t=d.types||[],n=t.length;const names=n?t.map(x=>TYPE_NAME[x]).join('、'):'還沒有';
+  return `今天過關的題型：${names}（${n} 種）。`+(n<2?`還差 ${2-n} 種，今天的零用金才會算數。`:n<4?`零用金已算數，再 ${4-n} 種就能 ×1.2。`:'已達 4 種以上，今天 ×1.2！')}
+
+function render(){
+  if(!S){$('dash').innerHTML='<div class="card">還沒有任何紀錄。請先在孩子的手機登入「孩子帳號」，練習一關後這裡就會出現資料。</div>';$('setInfo').textContent='';$('payList').innerHTML='';return}
+  const s=S,td=s.days[today()]||{};const acc=td.q?Math.round((td.c||0)/td.q*100):0;
+  let mi=0,me=0;for(const k in s.wl)if(s.wl[k]>=2)mi++;
+  const last=s.updatedAt?new Date(s.updatedAt).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+  // 14-day chart
+  const days=[];for(let i=13;i>=0;i--){const dt=new Date();dt.setDate(dt.getDate()-i);days.push(dt.toLocaleDateString('sv-SE'))}
+  const maxQ=Math.max(10,...days.map(k=>(s.days[k]||{}).q||0));
+  const bars=days.map(k=>{const d=s.days[k]||{};const h=Math.round(((d.q||0)/maxQ)*100);return `<div class="bar" title="${k}：${d.q||0} 題，計入 $${money(d.credited)}"><b>${d.q||''}</b><i class="${(d.stages||0)>=s.goal?'met':''}" style="height:${h}%"></i>${k.slice(8)}</div>`}).join('');
+  // daily table
+  const ks=Object.keys(s.days).filter(k=>(s.days[k].q||0)>0||(s.days[k].credited||0)>0).sort().reverse().slice(0,62);
+  const rows=ks.map(k=>{const d=s.days[k];const dt=new Date(k+'T00:00:00');return `<tr${k<s.period.start?' class="old"':''}><td>${k.slice(5).replace('-','/')}（${'日一二三四五六'[dt.getDay()]}）</td><td>${d.q||0}</td><td>${d.q?Math.round((d.c||0)/d.q*100)+'%':'–'}</td><td>${d.stages||0}</td><td class="wrap">${(d.types||[]).map(x=>TYPE_NAME[x]).join('、')||'–'}</td><td>$${money(d.earn)}</td><td><b>$${money(d.credited)}</b></td></tr>`}).join('');
+  // world progress
+  const prog=WORLDS.map(([w,name,n])=>{let st=0,cl=0;for(let k=1;k<=n;k++){const b=s.best[w+'-'+k]||0;st+=b;if(b)cl++}return `<div class="prog"><span>${name}</span><div class="track"><i style="width:${Math.round(cl/n*100)}%"></i></div><span>${cl}/${n} 關・${st}★</span></div>`}).join('')
+   +`<div class="prog"><span>中級字</span><div class="track"><i style="width:${Math.round(mi/WORDS.i*100)}%"></i></div><span>${mi}/${WORDS.i}</span></div>`;
+  // mistakes
+  const tagCount={};for(const m of s.mistakes)if(m.tag)tagCount[m.tag]=(tagCount[m.tag]||0)+1;
+  const tags=Object.entries(tagCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const mis=s.mistakes.slice(0,8).map(m=>`<div class="mis">${m.tag?`<span class="tag">${esc(m.tag)}</span>`:''}${esc(m.prompt).slice(0,160)}<div class="muted">孩子的答案：${esc(m.your)}　正解：<b style="color:var(--good)">${esc(m.answer)}</b></div></div>`).join('');
+  const weak=s.items.filter(i=>i.type==='word'&&i.fam===0);
+  $('dash').innerHTML=`
+  <p class="muted" style="margin:0 0 10px">孩子最後一次更新：${last}　｜　本期從 ${s.period.start} 開始</p>
+  <div class="grid">
+    <div class="stat hl"><div class="n">$${money(s.period.earned)}</div><div class="l">本期零用金</div></div>
+    <div class="stat"><div class="n">$${money(td.credited)}</div><div class="l">今天計入（練習賺 $${money(td.earn)}）</div></div>
+    <div class="stat"><div class="n">${td.q||0} 題</div><div class="l">今天答題・正確率 ${acc}%</div></div>
+    <div class="stat"><div class="n">${td.stages||0} / ${s.goal}</div><div class="l">今天過關／每日目標</div></div>
+    <div class="stat"><div class="n">${streak(s)} 天</div><div class="l">連續達成每日目標</div></div>
+  </div>
+  <div class="card"><p class="status">${typeMsg(td)}</p></div>
+  <div class="card"><h2>最近 14 天答題數</h2><div class="bars">${bars}</div><p class="muted">綠色代表當天有達成每日目標。</p></div>
+  <div class="card"><h2>每日紀錄</h2>${rows?`<div class="tw"><table><thead><tr><th>日期</th><th>題數</th><th>正確率</th><th>過關</th><th>過關題型</th><th>練習賺</th><th>計入</th></tr></thead><tbody>${rows}</tbody></table></div><p class="muted">淡色是本期以前的紀錄；「計入」是符合題型規則、真正算進零用金的金額。</p>`:'<p class="muted">還沒有紀錄。</p>'}</div>
+  <div class="card"><h2>闖關進度</h2>${prog}</div>
+  <div class="card"><h2>需要加強的地方</h2>
+    ${tags.length?`<p style="margin:0 0 6px;font-weight:700">常錯的文法重點</p><div class="chips">${tags.map(([t,n])=>`<span class="chip">${esc(t)} ×${n}</span>`).join('')}</div>`:''}
+    <p style="margin:12px 0 6px;font-weight:700">不熟的單字（${weak.length} 個）</p>${weak.length?`<div class="chips">${weak.slice(0,40).map(w=>`<span class="chip">${esc(w.term)} ${esc((w.zh||'').split(/[；、]/)[0])}</span>`).join('')}</div>`:'<p class="muted">目前沒有。</p>'}
+    <p style="margin:12px 0 0;font-weight:700">最近的錯題（共 ${s.mistakes.length} 題）</p>${mis||'<p class="muted">目前沒有。</p>'}
+  </div>`;
+  $('setInfo').textContent=`期間：${s.period.start} ～ ${today()}，累積 NT$${money(s.period.earned)}`;
+  if(document.activeElement!==$('paid'))$('paid').value=Math.round(s.period.earned||0);
+  $('payList').innerHTML=s.payouts.length?s.payouts.map((p,i)=>`<div class="pay"><div><b>實付 NT$${p.paid}</b><div class="muted">${p.at} 結算・期間 ${p.from} ～ ${p.to}・累積 $${money(p.earned)}${p.note?'・'+esc(p.note):''}</div></div><button class="ghost danger" data-del="${p.id}" data-first="${i===0?1:0}">刪除</button></div>`).join(''):'<p class="muted">還沒有紀錄。</p>';
+  if(!formReady){$('dayCap').value=s.rules.day;$('monCap').value=s.rules.month;$('goal').value=String(s.goal);formReady=true}
+}
+
+async function commit(fn){const snap=await getDoc(ref);const s=ensure(snap.exists()?JSON.parse(JSON.stringify(snap.data())):{});fn(s);s.updatedAt=Date.now();await setDoc(ref,JSON.parse(JSON.stringify(s)))}
+$('settleBtn').onclick=async()=>{const paid=parseFloat($('paid').value);if(!(paid>=0)){toast('請輸入正確的金額');return}
+  const note=$('note').value.trim();if(!confirm(`確定發放 NT$${paid}，並把本期金額歸零嗎？`))return;
+  $('settleBtn').disabled=true;
+  try{await commit(s=>{s.payouts.unshift({id:uid(),at:today(),from:s.period.start,to:today(),earned:r2(s.period.earned),paid:r2(paid),note});s.period={start:today(),earned:0,ver:(s.period.ver||0)+1}});$('note').value='';toast('已結算，從今天重新累積')}
+  catch(e){toast('結算失敗，請再試一次')}
+  $('settleBtn').disabled=false};
+$('payList').addEventListener('click',async e=>{const b=e.target.closest('[data-del]');if(!b)return;const id=b.dataset.del;
+  let back=false;
+  if(b.dataset.first==='1'){back=confirm('要把這期累積的金額加回本期嗎？\n\n按「確定」：刪除紀錄，金額加回本期（按錯結算時用）。\n按「取消」：下一步再選擇是否只刪除紀錄。');}
+  if(!back&&!confirm('只刪除這筆紀錄，金額不加回。確定嗎？'))return;
+  try{await commit(s=>{const p=s.payouts.find(x=>x.id===id);if(!p)return;s.del.push(id);s.payouts=s.payouts.filter(x=>x.id!==id);
+    if(back)s.period={start:p.from,earned:r2(p.earned+s.period.earned),ver:(s.period.ver||0)+1}});toast('已刪除紀錄')}catch(err){toast('刪除失敗，請再試一次')}});
+$('ruleBtn').onclick=async()=>{const dc=parseFloat($('dayCap').value),mc=parseFloat($('monCap').value),g=+$('goal').value;
+  if(!(dc>0&&mc>0)){toast('上限要大於 0');return}
+  try{await commit(s=>{s.rules={day:r2(dc),month:r2(mc)};s.goal=g});toast('設定已儲存')}catch(e){toast('儲存失敗，請再試一次')}};
+</script>
+</body>
+</html>
